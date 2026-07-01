@@ -1,31 +1,40 @@
 import { Socket } from "socket.io";
 
-import { SOCKET_EVENTS, SOCKET_ROOMS } from "../events/socket-events";
+import { SOCKET_EVENTS } from "../events/socket-events";
 import { TrackingService } from "../services/tracking.service";
 import { VehicleLocation } from "../types/location";
+import { AckResponse } from "../types/socket";
+import { validateLocation } from "../middleware/validate-location"
+import { SocketData } from "../types/socket-data";
 
 export class SocketHandler {
   constructor(private readonly trackingService: TrackingService) {}
 
-  handleConnection(socket: Socket) {
+  handleConnection(socket: Socket<any, any, any, SocketData>) {
     console.log(`Connected : ${socket.id}`);
-
-    socket.on(SOCKET_EVENTS.DRIVER_JOIN, () => {
-      socket.join(SOCKET_ROOMS.DRIVERS);
-
-      console.log(`${socket.id} joined Drivers`);
-    });
-
-    socket.on(SOCKET_EVENTS.DASHBOARD_JOIN, () => {
-      socket.join(SOCKET_ROOMS.DASHBOARDS);
-
-      console.log(`${socket.id} joined Dashboards`);
-    });
 
     socket.on(
       SOCKET_EVENTS.LOCATION_UPDATE,
-      (location: VehicleLocation) => {
-        this.trackingService.updateLocation(location);
+      (data:unknown, callback?: (response: AckResponse) => void) => {
+
+        const result = validateLocation(data);
+
+        if (!result.success) {
+
+          callback?.({
+            success: false,
+            message: result.error.issues[0].message,
+          });
+
+          return;
+        }
+        const vehicleId = socket.data.vehicleId!;
+        this.trackingService.updateLocation(vehicleId, result.data);
+
+        callback?.({
+          success: true,
+          message: "Location Updated",
+        });
       }
     );
 

@@ -1,18 +1,18 @@
-import { VehicleLocation } from "../types/location";
+import { VehicleLocation, VehicleTrackingData } from "../types/location";
 import { LocationStore } from "./location-store";
 
 export class InMemoryLocationStore implements LocationStore {
-  private readonly locations = new Map<string, VehicleLocation>();
+  private readonly locations = new Map<string, VehicleTrackingData>();
 
-  save(location: VehicleLocation): void {
+  save(location: VehicleTrackingData): void {
     this.locations.set(location.vehicleId, location);
   }
 
-  get(vehicleId: string): VehicleLocation | undefined {
+  get(vehicleId: string): VehicleTrackingData | undefined {
     return this.locations.get(vehicleId);
   }
 
-  getAll(): VehicleLocation[] {
+  getAll(): VehicleTrackingData[] {
     return [...this.locations.values()];
   }
 }

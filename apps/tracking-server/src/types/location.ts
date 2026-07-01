@@ -1,5 +1,4 @@
 export interface VehicleLocation {
-  vehicleId: string;
 
   latitude: number;
 
@@ -10,4 +9,8 @@ export interface VehicleLocation {
   heading: number;
 
   timestamp: number;
+}
+
+export interface VehicleTrackingData extends VehicleLocation {
+  vehicleId: string;
 }

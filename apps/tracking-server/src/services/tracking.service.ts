@@ -2,7 +2,7 @@ import { Server } from "socket.io";
 
 import { SOCKET_EVENTS } from "../events/socket-events";
 import { LocationStore } from "../stores/location-store";
-import { VehicleLocation } from "../types/location";
+import { VehicleLocation, VehicleTrackingData } from "../types/location";
 import { SOCKET_ROOMS } from "../events/socket-events";
 
 export class TrackingService {
@@ -11,8 +11,14 @@ export class TrackingService {
     private readonly io: Server
   ) {}
 
-  updateLocation(location: VehicleLocation) {
-    this.locationStore.save(location);
+  updateLocation(vehicleId: string, location: VehicleLocation) {
+
+    const trackingData: VehicleTrackingData = {
+      vehicleId,
+      ...location,
+    };
+
+    this.locationStore.save(trackingData);
 
     ioToDashboards(this.io, location);
   }

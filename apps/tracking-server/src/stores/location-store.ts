@@ -1,9 +1,11 @@
-import { VehicleLocation } from "../types/location";
+import { VehicleTrackingData } from "../types/location";
 
 export interface LocationStore {
-  save(location: VehicleLocation): void;
+  save(location: VehicleTrackingData): void;
 
-  get(vehicleId: string): VehicleLocation | undefined;
+  get(
+    vehicleId: string
+  ): VehicleTrackingData | undefined;
 
-  getAll(): VehicleLocation[];
+  getAll(): VehicleTrackingData[];
 }
