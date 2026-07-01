@@ -1,5 +1,8 @@
 import { Server as HttpServer } from "http";
 import { Server } from "socket.io";
+import { TrackingService } from "../services/tracking.service";
+import { SocketHandler } from "./socket-handler";
+import { InMemoryLocationStore } from "../stores/in-memory-location-store";
 
 export function createSocketServer(server: HttpServer) {
   const io = new Server(server, {
@@ -8,12 +11,14 @@ export function createSocketServer(server: HttpServer) {
     },
   });
 
-  io.on("connection", (socket) => {
-    console.log(`Socket Connected : ${socket.id}`);
+  const locationStore = new InMemoryLocationStore();
 
-    socket.on("disconnect", () => {
-      console.log(`Socket Disconnected : ${socket.id}`);
-    });
+  const trackingService = new TrackingService(locationStore, io);
+
+  const socketHandler = new SocketHandler(trackingService);
+
+  io.on("connection", (socket) => {
+    socketHandler.handleConnection(socket);
   });
 
   return io;

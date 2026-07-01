@@ -10,5 +10,5 @@
     "skipLibCheck": true,
     "ignoreDeprecations": "6.0"
   },
-  "include": ["src"]
+  "include": ["src", "driver.js", "dashboard.js"]
 }
