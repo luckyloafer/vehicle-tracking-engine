@@ -12,6 +12,7 @@ import { DisconnectEventHandler } from "./handlers/disconnect-event.handler";
 import { ConnectionHandler } from "./handlers/connection.handler";
 import { HeartbeatEventHandler } from "./handlers/heartbeat-event.handler";
 import { PresenceMonitorService } from "../services/presence-monitor.service";
+import { Container } from "../container/container";
 
 export function createSocketServer(server: HttpServer) {
   const io = new Server<SocketData>(server, {
@@ -20,39 +21,9 @@ export function createSocketServer(server: HttpServer) {
     },
   });
 
-  const locationStore = new InMemoryLocationStore();
+  const container = new Container(io);
 
-  const trackingService = new TrackingService(locationStore, io);
-
-  const presenceService = new PresenceService(); 
-
-  const presenceMonitor =
-    new PresenceMonitorService(
-        io,
-        presenceService
-    );
-
-presenceMonitor.start();
-
-  const locationHandler =
-    new LocationEventHandler(
-      trackingService
-    );
-
-  const heartbeatHandler =
-      new HeartbeatEventHandler(
-          presenceService
-      );
-
-  const disconnectHandler =
-    new DisconnectEventHandler();
-
-  const connectionHandler =
-    new ConnectionHandler(
-      locationHandler,
-      heartbeatHandler,
-      disconnectHandler
-    );
+  container.presenceMonitor.start();
 
   io.use((socket, next) => {
     const auth = socket.handshake.auth as SocketAuth;
@@ -74,7 +45,7 @@ presenceMonitor.start();
   });
 
   io.on("connection", (socket) => {
-    connectionHandler.handle(socket);
+    container.connectionHandler.handle(socket);
   });
 
   return io;
