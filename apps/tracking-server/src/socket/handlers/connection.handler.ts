@@ -3,6 +3,7 @@ import { Socket } from "socket.io";
 import { SocketData } from "../../types/socket-data";
 
 import { LocationEventHandler } from "./location-event.handler";
+import { HeartbeatEventHandler } from "./heartbeat-event.handler";
 import { DisconnectEventHandler } from "./disconnect-event.handler";
 
 export class ConnectionHandler {
@@ -11,7 +12,9 @@ export class ConnectionHandler {
 
     private readonly locationHandler: LocationEventHandler,
 
-    private readonly disconnectHandler: DisconnectEventHandler
+    private readonly heartbeatHandler: HeartbeatEventHandler,
+
+    private readonly disconnectHandler: DisconnectEventHandler,
 
   ) {}
 
@@ -22,6 +25,8 @@ export class ConnectionHandler {
     console.log(`${socket.id} connected`);
 
     this.locationHandler.handle(socket);
+
+    this.heartbeatHandler.handle(socket);
 
     this.disconnectHandler.handle(socket);
 

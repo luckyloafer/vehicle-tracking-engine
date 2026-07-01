@@ -33,7 +33,16 @@ socket.on("connect", () => {
       },
         );
     }, 1000);
-    });
+
+    // Send heartbeat every 5 seconds
+    setInterval(() => {
+
+        socket.emit("heartbeat");
+
+        console.log("Heartbeat Sent");
+
+    }, 5000);
+});
 
 socket.on("connect_error", (error) => {
   console.log(error.message);

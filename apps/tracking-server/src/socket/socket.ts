@@ -1,6 +1,7 @@
 import { Server as HttpServer } from "http";
 import { Server } from "socket.io";
 import { TrackingService } from "../services/tracking.service";
+import { PresenceService } from "../services/presence.service";
 import { SocketHandler } from "./socket-handler";
 import { InMemoryLocationStore } from "../stores/in-memory-location-store";
 import { SocketAuth } from "../types/socket-auth";
@@ -9,6 +10,7 @@ import { SocketData } from "../types/socket-data";
 import { LocationEventHandler } from "./handlers/location-event.handler";
 import { DisconnectEventHandler } from "./handlers/disconnect-event.handler";
 import { ConnectionHandler } from "./handlers/connection.handler";
+import { HeartbeatEventHandler } from "./handlers/heartbeat-event.handler";
 
 export function createSocketServer(server: HttpServer) {
   const io = new Server<SocketData>(server, {
@@ -21,10 +23,17 @@ export function createSocketServer(server: HttpServer) {
 
   const trackingService = new TrackingService(locationStore, io);
 
+  const presenceService = new PresenceService(); 
+
   const locationHandler =
     new LocationEventHandler(
       trackingService
     );
+
+  const heartbeatHandler =
+      new HeartbeatEventHandler(
+          presenceService
+      );
 
   const disconnectHandler =
     new DisconnectEventHandler();
@@ -32,6 +41,7 @@ export function createSocketServer(server: HttpServer) {
   const connectionHandler =
     new ConnectionHandler(
       locationHandler,
+      heartbeatHandler,
       disconnectHandler
     );
 
