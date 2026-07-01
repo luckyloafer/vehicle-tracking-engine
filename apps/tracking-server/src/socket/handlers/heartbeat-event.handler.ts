@@ -23,12 +23,6 @@ export class HeartbeatEventHandler {
                 this.presenceService.update(
                     socket.data.vehicleId!
                 );
-
-                console.log(
-                    "Online:",
-                    this.presenceService.isOnline(socket.data.vehicleId!)
-                );
-
             }
         );
 

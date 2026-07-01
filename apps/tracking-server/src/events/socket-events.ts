@@ -5,6 +5,12 @@ export const SOCKET_EVENTS = {
 
     VEHICLE_UPDATE: "vehicle:update",
 
+    HEARTBEAT: "heartbeat",
+
+    VEHICLE_ONLINE: "vehicle:online",
+
+    VEHICLE_OFFLINE: "vehicle:offline",
+
     DISCONNECT: "disconnect"
 } as const;
 

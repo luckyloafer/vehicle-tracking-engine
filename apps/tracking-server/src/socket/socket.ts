@@ -11,6 +11,7 @@ import { LocationEventHandler } from "./handlers/location-event.handler";
 import { DisconnectEventHandler } from "./handlers/disconnect-event.handler";
 import { ConnectionHandler } from "./handlers/connection.handler";
 import { HeartbeatEventHandler } from "./handlers/heartbeat-event.handler";
+import { PresenceMonitorService } from "../services/presence-monitor.service";
 
 export function createSocketServer(server: HttpServer) {
   const io = new Server<SocketData>(server, {
@@ -24,6 +25,14 @@ export function createSocketServer(server: HttpServer) {
   const trackingService = new TrackingService(locationStore, io);
 
   const presenceService = new PresenceService(); 
+
+  const presenceMonitor =
+    new PresenceMonitorService(
+        io,
+        presenceService
+    );
+
+presenceMonitor.start();
 
   const locationHandler =
     new LocationEventHandler(

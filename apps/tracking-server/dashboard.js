@@ -8,8 +8,16 @@ const socket = io("http://localhost:4000", {
 
 socket.on("connect", () => {
   console.log("Dashboard Connected");
-
   socket.emit("dashboard:join");
+});
+
+socket.on("vehicle:online", (data) => {
+    console.log("ONLINE", data);
+
+});
+
+socket.on("vehicle:offline", (data) => {
+    console.log("OFFLINE", data);
 });
 
 socket.on("vehicle:update", (location) => {
