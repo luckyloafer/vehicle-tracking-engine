@@ -6,11 +6,12 @@ import { VehicleLocation } from "../types/location";
 import { AckResponse } from "../types/socket";
 import { validateLocation } from "../middleware/validate-location"
 import { SocketData } from "../types/socket-data";
+import { ClientToServerEvents, InterServerEvents, ServerToClientEvents } from "../types/socket-events";
 
 export class SocketHandler {
   constructor(private readonly trackingService: TrackingService) {}
 
-  handleConnection(socket: Socket<any, any, any, SocketData>) {
+  handleConnection(socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>) {
     console.log(`Connected : ${socket.id}`);
 
     socket.on(

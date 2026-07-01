@@ -6,6 +6,9 @@ import { InMemoryLocationStore } from "../stores/in-memory-location-store";
 import { SocketAuth } from "../types/socket-auth";
 import { SOCKET_ROOMS } from "../events/socket-events";
 import { SocketData } from "../types/socket-data";
+import { LocationEventHandler } from "./handlers/location-event.handler";
+import { DisconnectEventHandler } from "./handlers/disconnect-event.handler";
+import { ConnectionHandler } from "./handlers/connection.handler";
 
 export function createSocketServer(server: HttpServer) {
   const io = new Server<SocketData>(server, {
@@ -18,7 +21,19 @@ export function createSocketServer(server: HttpServer) {
 
   const trackingService = new TrackingService(locationStore, io);
 
-  const socketHandler = new SocketHandler(trackingService);
+  const locationHandler =
+    new LocationEventHandler(
+      trackingService
+    );
+
+  const disconnectHandler =
+    new DisconnectEventHandler();
+
+  const connectionHandler =
+    new ConnectionHandler(
+      locationHandler,
+      disconnectHandler
+    );
 
   io.use((socket, next) => {
     const auth = socket.handshake.auth as SocketAuth;
@@ -40,7 +55,7 @@ export function createSocketServer(server: HttpServer) {
   });
 
   io.on("connection", (socket) => {
-    socketHandler.handleConnection(socket);
+    connectionHandler.handle(socket);
   });
 
   return io;
