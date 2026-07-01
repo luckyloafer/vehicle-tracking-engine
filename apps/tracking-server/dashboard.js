@@ -2,14 +2,12 @@ const { io } = require("socket.io-client");
 
 const socket = io("http://localhost:4000");
 
-socket.on("connect",()=>{
+socket.on("connect", () => {
+  console.log("Dashboard Connected");
 
-    console.log("Dashboard Connected");
-
+  socket.emit("dashboard:join");
 });
 
-socket.on("vehicle:update",(data)=>{
-
-    console.log(data);
-
+socket.on("vehicle:update", (location) => {
+  console.log(location);
 });

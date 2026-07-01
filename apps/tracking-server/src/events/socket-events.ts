@@ -11,3 +11,8 @@ export const SOCKET_EVENTS = {
 
     DISCONNECT: "disconnect"
 } as const;
+
+export const SOCKET_ROOMS = {
+  DRIVERS: "drivers",
+  DASHBOARDS: "dashboards",
+} as const;
