@@ -1,11 +1,6 @@
 import { Server } from "socket.io";
-
-import {
-    SOCKET_EVENTS,
-    SOCKET_ROOMS
-} from "../events/socket-events";
-
 import { PresenceService } from "./presence.service";
+import { RealtimeEmitter } from "../emitters/realtime-emitter";
 
 export class PresenceMonitorService {
 
@@ -14,9 +9,9 @@ export class PresenceMonitorService {
 
     constructor(
 
-        private readonly io: Server,
+        private readonly presence: PresenceService,
 
-        private readonly presence: PresenceService
+        private readonly realtimeEmitter: RealtimeEmitter
 
     ) {}
 
@@ -35,14 +30,7 @@ export class PresenceMonitorService {
 
                     this.online.add(vehicleId);
 
-                    this.io
-                        .to(SOCKET_ROOMS.DASHBOARDS)
-                        .emit(
-                            SOCKET_EVENTS.VEHICLE_ONLINE,
-                            {
-                                vehicleId
-                            }
-                        );
+                    this.realtimeEmitter.emitVehicleOnline(vehicleId);
 
                     console.log(vehicleId, "ONLINE");
 
@@ -52,14 +40,7 @@ export class PresenceMonitorService {
 
                     this.online.delete(vehicleId);
 
-                    this.io
-                        .to(SOCKET_ROOMS.DASHBOARDS)
-                        .emit(
-                            SOCKET_EVENTS.VEHICLE_OFFLINE,
-                            {
-                                vehicleId
-                            }
-                        );
+                    this.realtimeEmitter.emitVehicleOffline(vehicleId);
 
                     console.log(vehicleId, "OFFLINE");
 

@@ -9,6 +9,7 @@ import { LocationEventHandler } from "../socket/handlers/location-event.handler"
 import { DisconnectEventHandler } from "../socket/handlers/disconnect-event.handler";
 import { HeartbeatEventHandler } from "../socket/handlers/heartbeat-event.handler";
 import { ConnectionHandler } from "../socket/handlers/connection.handler";
+import { SocketRealtimeEmitter } from "../emitters/socket-realtime-emitter";
 
 export class Container {
   readonly trackingService: TrackingService;
@@ -21,14 +22,16 @@ export class Container {
 
     this.presenceService = new PresenceService();
 
+    const realtimeEmitter = new SocketRealtimeEmitter(io);
+
     this.trackingService = new TrackingService(
       locationStore,
-      io
+      realtimeEmitter
     );
 
     this.presenceMonitor = new PresenceMonitorService(
-      io,
-      this.presenceService
+      this.presenceService,
+      realtimeEmitter
     );
 
     const locationHandler =

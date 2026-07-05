@@ -4,11 +4,12 @@ import { SOCKET_EVENTS } from "../events/socket-events";
 import { LocationStore } from "../stores/location-store";
 import { VehicleLocation, VehicleTrackingData } from "../types/location";
 import { SOCKET_ROOMS } from "../events/socket-events";
+import { RealtimeEmitter } from "../emitters/realtime-emitter";
 
 export class TrackingService {
   constructor(
     private readonly locationStore: LocationStore,
-    private readonly io: Server
+  private readonly realtimeEmitter: RealtimeEmitter
   ) {}
 
   updateLocation(vehicleId: string, location: VehicleLocation) {
@@ -20,16 +21,6 @@ export class TrackingService {
 
     this.locationStore.save(trackingData);
 
-    ioToDashboards(this.io, location);
+    this.realtimeEmitter.emitVehicleUpdate(trackingData);
   }
-}
-
-function ioToDashboards(
-  io: Server,
-  location: VehicleLocation
-) {
-  io.to(SOCKET_ROOMS.DASHBOARDS).emit(
-    SOCKET_EVENTS.VEHICLE_UPDATE,
-    location
-  );
 }
